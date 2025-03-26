@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Container,
@@ -25,11 +25,40 @@ import CreateNewCourseForm from './create-new-course-form';
 import messages from './messages';
 import { useStudioHome } from './hooks';
 import AlertMessage from '../generic/alert-message';
+import { getAuthenticatedUser } from '@edx/frontend-platform/auth';
+import { getAuthenticatedHttpClient } from '@edx/frontend-platform/auth';
 
 const StudioHome = () => {
   const intl = useIntl();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  const user = getAuthenticatedUser();
+  const [isAdmin, setIsAdmin] = useState();
+  const permissionName = 'is_staff';
+
+  const fetchIsAdmin = async () => {
+    try {
+      const url = `${getConfig().STUDIO_BASE_URL.replace(/\/$/, '')}/api/v1/user-permissions/?user_id=${user.userId}&permission_name=${permissionName}`;
+      const httpClient = getAuthenticatedHttpClient();
+      const response = await httpClient.get(url, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+      });
+      console.log(response)
+
+      setIsAdmin(response.data.has_permission);
+  
+    } catch (error) {
+      console.error('Error verificando administrador:', error);
+    }
+  };
+
+useEffect(() => {
+  fetchIsAdmin();
+}, []);
 
   const isPaginationCoursesEnabled = getConfig().ENABLE_HOME_PAGE_COURSE_API_V2;
   const {
@@ -92,7 +121,7 @@ const StudioHome = () => {
         if (showV2LibraryURL) {
           navigate('/library/create');
         } else {
-          // Studio home library for legacy libraries
+          
           window.open(`${getConfig().STUDIO_BASE_URL}/home_library`);
         }
       };
@@ -103,6 +132,7 @@ const StudioHome = () => {
           iconBefore={AddIcon}
           size="sm"
           onClick={newLibraryClick}
+          disabled={!isAdmin}
           data-testid="new-library-button"
         >
           {intl.formatMessage(messages.addNewLibraryBtnText)}
@@ -111,7 +141,7 @@ const StudioHome = () => {
     }
 
     return headerButtons;
-  }, [location, userIsActive, isFailedLoadingPage]);
+  }, [location, userIsActive, isFailedLoadingPage, isAdmin]);
 
   const headerButtons = userIsActive ? getHeaderButtons() : [];
   if (isLoadingPage && !isFiltered) {
