@@ -72,15 +72,19 @@ const validateScheduleAndDetails = (courseDetails, canShowCertificateAvailableDa
 };
 
 const updateWithDefaultValues = (values) => {
-  const { entranceExamMinimumScorePct } = values;
+  const { entranceExamMinimumScorePct, certificateAvailableDate } = values;
+  const valuesWithCertificateAvailableDate = certificateAvailableDate === ''
+    ? { ...values, certificateAvailableDate: null }
+    : values;
+
   if (entranceExamMinimumScorePct === '') {
     return {
-      ...values,
+      ...valuesWithCertificateAvailableDate,
       entranceExamMinimumScorePct: defaultEntranceExamMinimumScorePct,
     };
   }
 
-  return values;
+  return valuesWithCertificateAvailableDate;
 };
 
 export { updateWithDefaultValues, validateScheduleAndDetails };
