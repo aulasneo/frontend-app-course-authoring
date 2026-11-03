@@ -1,0 +1,19 @@
+src/schedule-and-details/utils.js
+  s_927148fbcca327::t_3e44c0c72cc079 75-79,82,87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "69ca262840a000587cf9de3cae6b4de499f3804a",
+  "prompts": {},
+  "sessions": {
+    "s_927148fbcca327": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1a19d-31c3-7b63-8a73-b6484e477356",
+        "model": "gpt-6-luna"
+      },
+      "human_author": "Andrés González <andres@aulasneo.com>"
+    }
+  }
+}
